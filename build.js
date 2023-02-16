@@ -1,10 +1,13 @@
 const UglifyJS = require('uglify-es');
 const CleanCSS = require('clean-css');
 const fs = require('fs');
+const path = require('path')
 const {
-  readFileSync,
+  readFileSync: readFile,
   writeFileSync,
 } = fs;
+
+const readFileSync = (url, encoding) => readFile(path.resolve(url), encoding)
 
 const toMD5 = data=>require('crypto').createHash('md5').update(data).digest('hex');
 
@@ -33,9 +36,9 @@ const CleanCSSOptions = {
 
 
 
-let sakanaJSCode = readFileSync('html/sakana.js', 'utf8');
+let sakanaJSCode = readFileSync('./html/sakana.js', 'utf8');
 
-const cssTextMinify = new CleanCSS(CleanCSSOptions).minify(readFileSync('html/sakana.css','utf8'));
+const cssTextMinify = new CleanCSS(CleanCSSOptions).minify(readFileSync('./html/sakana.css','utf8'));
 const cssTextMinifyStyles = cssTextMinify.styles;
 
 sakanaJSCode = sakanaJSCode.replace(
@@ -71,7 +74,7 @@ const sakanaJSCodeMinify = UglifyJS.minify(sakanaJSCode, UglifyOptions);
 const sakanaJSCodeMinifyCode = sakanaJSCodeMinify.code;
 
 const sakanaJSCodeMinifyCodeReplaced = sakanaJSCodeMinifyCode.replace(fileNamesRegExpG,fileName=>{
-  const data = readFileSync('html/'+fileName,'binary');
+  const data = readFileSync('./html/'+fileName,'binary');
   const buffer = Buffer.from(data, 'binary');
   return 'data:'+ getImageType(fileName) +';base64,'+ buffer.toString('base64') +'';
 });
